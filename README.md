@@ -67,7 +67,7 @@ One song can belong to an artist and an album, appear in many playlists, be save
 
 ### Part 1: EER Diagram
 
-![EER Diagram](./images/eer-diagram.jpg)
+![EER Diagram](./eer-diagram.jpg)
 
 The EER diagram contains nine tables.
 
