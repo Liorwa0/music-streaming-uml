@@ -186,8 +186,8 @@ classDiagram
 - **Listener 1 → 0..* Favorite, Favorite 0..* → 1 Song:** many-to-many between Listener and Song; each Favorite has exactly one listener and one song.
 - **Listener 1 → 0..* ListeningHistory, ListeningHistory 0..* → 1 Song:** each play belongs to one listener and one song; a new listener has no history.
 
-### Relation to the EER diagram (supplementary)
-The EER diagram (`./eer-diagram.jpg`) shows the database view of the same domain: tables, PKs, FKs. It is supplementary; the class diagram is the UML deliverable. Alignment notes:
+### Relation to the EER diagram
+![EER Diagram](./eer-diagram.jpg) shows the database view of the same domain: tables, PKs, FKs. It is supplementary; the class diagram is the UML deliverable. Alignment notes:
 #### User
 - **Represents:** The main account in the platform.
 - **PK:** `user_id`
