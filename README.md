@@ -1,76 +1,193 @@
-# music streaming uml 
+# Music Streaming Platform — UML Design
 
-## Project Overview
-
-**Project Type:** Holberton School — PLD Activity / UML Design Lab
-
-### About the Project
-
-This project is a UML design exercise for a music streaming platform.
-
-The platform is similar to a basic music streaming service where users can listen to songs, create playlists, save favorite songs, and view their listening history. Artists can publish songs and create albums.
-
-The project focuses on modeling the platform using EER and UML Class Diagrams.
-
-### Project Idea
-
-The idea is to design a simple music streaming platform centered around songs, artists, albums, playlists, and user listening activity.
-
----
-
-## Team Organization
+**Holberton School — PLD Activity / UML Design Lab**
 
 | Member | Responsibilities |
 |---|---|
 | Arwa | Task 0: Problem Analysis + Task 1: Class Diagram |
-| Abdulrahman | Task 2: Sequence Diagram 1 + Sequence Diagram 2 |
+| Abdulrahman | Task 2: Sequence Diagrams 1 and 2 |
 | Khalid | Task 2: Sequence Diagram 3 + Task 3: Design Justification + Final Presentation |
 
 ---
 
-## Task 0: Problem Analysis
+## 1. Project Overview
 
-### The Problem
+A UML design of a basic music streaming platform. Listeners play songs, build playlists, save favorites and have their listening recorded. Artists publish songs and create albums. The design is modeled with an EER diagram (supplementary), a UML class diagram, and three sequence diagrams, all consistent with one domain model.
 
-A music streaming platform contains many songs, albums, artists, playlists, and user interactions. Without a well-structured system, it becomes difficult to manage the relationships between them.
+**Out of scope:** payments, subscriptions, social features, recommendations, podcasts, messaging.
 
-### The Proposed System
-
-A simple music streaming platform centered around songs. Artists publish songs and create albums, while users listen to songs, organize them into playlists, save favorites, and have their listening activity recorded.
-
-### Main Users
-
-- **Listeners:** users who listen to music.
-- **Artists:** users who publish songs and create albums.
-
-### Main Functionality
-
-- User accounts
-- Listener and Artist roles
-- Song publishing
-- Album creation
-- Song playback
-- Playlist management
-- Favorite songs
-- Listening history
-
-### Why Structured Relationships Are Needed
-
-One song can belong to an artist and an album, appear in many playlists, be saved as a favorite by many users, and appear in many listening history records. The system therefore needs clearly defined relationships between users, songs, artists, albums, playlists, and listening activity.
-
-**Responsible:** Arwa
 ---
 
-## Task 1: Database & Domain Modeling
+## 2. Problem Analysis
 
-**Responsible:** Arwa
+### 2.1 Problem Context
+A music platform holds many songs, albums, artists, playlists and user interactions. Without clearly defined relationships it is hard to know who owns what, which songs belong to which album, or which playlists contain a song.
 
-### Part 1: EER Diagram
+### 2.2 System Goal
+A simple platform centered on songs, where artists publish music and listeners listen to it, organize it and keep track of it.
 
-![EER Diagram](./eer-diagram.jpg)
+### 2.3 Main Users
+- **Listener:** listens to songs, creates playlists, saves favorites, has a listening history.
+- **Artist:** creates albums and publishes songs.
 
-The EER diagram contains nine tables.
+### 2.4 Main Entities
+User, Listener, Artist, Album, Song, Playlist, PlaylistSong, Favorite, ListeningHistory.
 
+### 2.5 Main Use Cases
+1. Listener plays a song (and optionally favorites it).
+2. Listener creates a playlist and adds a song.
+3. Artist creates an album and publishes a song into it.
+4. Also supported by the model: remove a song from a playlist, remove a favorite, view listening history, update profile.
+
+### 2.6 Key Relationships
+- An Artist creates albums and publishes songs; an Album contains songs.
+- A Listener creates playlists; a Playlist contains songs.
+- A Listener saves favorite songs.
+- A Listener's plays are recorded as listening history entries, each about one song.
+
+### 2.7 Alternatives Considered
+| Decision | Alternative A | Alternative B (chosen) | Why |
+|---|---|---|---|
+| User types | Listener and Artist as independent classes | `User` superclass with `Listener` and `Artist` subclasses | Both share account data (username, email, password, login). Independent classes would duplicate it. |
+| Playlist ↔ Song | Direct many-to-many | `PlaylistSong` association class | The link carries its own data (`position`, `addedAt`), so it needs to be a class. |
+| Favorite | Just a list of songs inside Listener | `Favorite` class | Stores `addedAt` and can be removed as an object. |
+| History | A single `lastPlayed` field on Song | `ListeningHistory` class | A song has many plays by many listeners; each play has its own time and progress. |
+
+---
+
+## 3. Class Diagram
+
+```mermaid
+classDiagram
+    direction TB
+
+    class User {
+        -int userId
+        -String username
+        -String email
+        -String passwordHash
+        -String profileImage
+        -DateTime createdAt
+        +login() Boolean
+        +logout() void
+        +updateProfile(username, email, profileImage) void
+    }
+
+    class Listener {
+        -String displayName
+        +createPlaylist(name, description, isPublic) Playlist
+        +addFavorite(song) Favorite
+        +removeFavorite(favorite) void
+        +playSong(song) ListeningHistory
+        +viewListeningHistory() List~ListeningHistory~
+    }
+
+    class Artist {
+        -String artistName
+        -String bio
+        -String artistImage
+        +createAlbum(title, description, coverImage, releaseDate) Album
+        +publishSong(title, description, durationSeconds, audioUrl, coverImage, releaseDate) Song
+        +updateArtistProfile(artistName, bio, artistImage) void
+    }
+
+    class Album {
+        -int albumId
+        -String title
+        -String description
+        -String coverImage
+        -Date releaseDate
+        -DateTime createdAt
+        +addSong(song) void
+        +removeSong(song) void
+    }
+
+    class Song {
+        -int songId
+        -String title
+        -String description
+        -int durationSeconds
+        -String audioUrl
+        -String coverImage
+        -int trackNumber
+        -Date releaseDate
+        -DateTime createdAt
+        +play() String
+        +getDuration() int
+    }
+
+    class Playlist {
+        -int playlistId
+        -String name
+        -String description
+        -String coverImage
+        -Boolean isPublic
+        -DateTime createdAt
+        -DateTime updatedAt
+        +addSong(song) PlaylistSong
+        +removeSong(song) void
+        +reorderSongs() void
+    }
+
+    class PlaylistSong {
+        -int position
+        -DateTime addedAt
+        +changePosition(newPosition) void
+    }
+
+    class Favorite {
+        -DateTime addedAt
+        +remove() void
+    }
+
+    class ListeningHistory {
+        -int historyId
+        -DateTime playedAt
+        -int progressSeconds
+        -Boolean completed
+        +recordPlayback() void
+        +updateProgress(seconds) void
+    }
+
+    User <|-- Listener
+    User <|-- Artist
+
+    Artist "1" --> "0..*" Album : creates
+    Artist "1" --> "0..*" Song : publishes
+    Album "0..1" o-- "0..*" Song : contains
+
+    Listener "1" --> "0..*" Playlist : creates
+    Playlist "1" *-- "0..*" PlaylistSong : contains
+    PlaylistSong "0..*" --> "1" Song : refers to
+
+    Listener "1" --> "0..*" Favorite : saves
+    Favorite "0..*" --> "1" Song : marks
+
+    Listener "1" --> "0..*" ListeningHistory : has
+    ListeningHistory "0..*" --> "1" Song : records play of
+```
+
+### Classes and responsibilities
+- **User:** shared account data and account actions (login, logout, profile).
+- **Listener:** everything a listening account can do: playlists, favorites, playback, history.
+- **Artist:** artist profile, creating albums, publishing songs.
+- **Album:** a collection of songs; manages its own membership.
+- **Song:** one track; knows its own data and can be played.
+- **Playlist:** a listener's ordered collection; manages its own songs and order.
+- **PlaylistSong:** one song's place in one playlist (`position`, `addedAt`).
+- **Favorite:** one listener's saved song, with the date saved.
+- **ListeningHistory:** one play event: when, how far, whether completed.
+
+### Multiplicity justification
+- **Artist 1 → 0..* Album / Song:** every album and song has exactly one artist; a new artist may have none yet.
+- **Album 0..1 → 0..* Song:** an album can be empty at creation; a song may be a single with no album. Aggregation (hollow diamond) because songs outlive album membership.
+- **Listener 1 → 0..* Playlist:** a playlist belongs to exactly one listener; a listener may have none.
+- **Playlist 1 → 0..* PlaylistSong (composition):** a PlaylistSong cannot exist without its playlist. **PlaylistSong 0..* → 1 Song:** one song can appear in many playlists (many-to-many through the association class); each entry refers to exactly one song.
+- **Listener 1 → 0..* Favorite, Favorite 0..* → 1 Song:** many-to-many between Listener and Song; each Favorite has exactly one listener and one song.
+- **Listener 1 → 0..* ListeningHistory, ListeningHistory 0..* → 1 Song:** each play belongs to one listener and one song; a new listener has no history.
+
+### Relation to the EER diagram (supplementary)
+The EER diagram (`./eer-diagram.jpg`) shows the database view of the same domain: tables, PKs, FKs. It is supplementary; the class diagram is the UML deliverable. Alignment notes:
 #### User
 - **Represents:** The main account in the platform.
 - **PK:** `user_id`
@@ -145,122 +262,6 @@ The EER diagram contains nine tables.
 | User ↔ Song | M:N through Favorite |
 | User → ListeningHistory | 1:N |
 | Song → ListeningHistory | 1:N |
-
----
-
-### Part 2: UML Class Diagram
-
-```mermaid
-classDiagram
-    direction TB
-    class User {
-        -int userId
-        -String username
-        -String email
-        -String passwordHash
-        -String profileImage
-        -DateTime createdAt
-        +login()
-        +logout()
-        +updateProfile()
-    }
-    class Listener {
-        -String displayName
-        +createPlaylist()
-        +addFavorite()
-        +playSong()
-    }
-    class Artist {
-        -String artistName
-        -String bio
-        -String artistImage
-        +publishSong()
-        +createAlbum()
-        +updateArtistProfile()
-    }
-    class Album {
-        -int albumId
-        -String title
-        -String description
-        -String coverImage
-        -Date releaseDate
-        -DateTime createdAt
-        +addSong()
-        +removeSong()
-    }
-    class Song {
-        -int songId
-        -String title
-        -String description
-        -int durationSeconds
-        -String audioUrl
-        -String coverImage
-        -int trackNumber
-        -Date releaseDate
-        -DateTime createdAt
-        +play()
-        +getDuration()
-    }
-    class Playlist {
-        -int playlistId
-        -String name
-        -String description
-        -String coverImage
-        -Boolean isPublic
-        -DateTime createdAt
-        -DateTime updatedAt
-        +addSong()
-        +removeSong()
-        +reorderSongs()
-    }
-    class PlaylistSong {
-        -int position
-        -DateTime addedAt
-        +changePosition()
-    }
-    class Favorite {
-        -DateTime addedAt
-        +remove()
-    }
-    class ListeningHistory {
-        -int historyId
-        -DateTime playedAt
-        -int progressSeconds
-        -Boolean completed
-        +recordPlayback()
-        +updateProgress()
-    }
-    User <|-- Listener
-    User <|-- Artist
-    Artist "1" --> "0..*" Album : creates
-    Artist "1" --> "0..*" Song : publishes
-    Album "1" --> "0..*" Song : contains
-    Listener "1" --> "0..*" Playlist : creates
-    Playlist "1" --> "0..*" PlaylistSong : contains
-    Song "1" --> "0..*" PlaylistSong : included in
-    Listener "1" --> "0..*" Favorite : saves
-    Song "1" --> "0..*" Favorite : favorited by
-    Listener "1" --> "0..*" ListeningHistory : has
-    Song "1" --> "0..*" ListeningHistory : appears in
-```
-
-### Class Explanation
-
-- **User** is the base account.
-- **Listener** and **Artist** inherit from **User**.
-- **Artist** creates albums and publishes songs.
-- **Album** contains songs.
-- **Listener** creates playlists.
-- **PlaylistSong** connects playlists and songs.
-- **Favorite** connects users with saved songs.
-- **ListeningHistory** records listening activity.
-
-### EER Diagram vs. Class Diagram
-
-- **EER Diagram:** represents the database structure, tables, PKs, FKs, and database relationships.
-- **Class Diagram:** represents classes, attributes, methods, inheritance, associations, and multiplicities.
-  
-**Responsible:** Arwa
 ---
 
 ## Task 2 — Sequence Diagrams
