@@ -268,10 +268,31 @@ classDiagram
 
 ### Abdulrahman
 
-Responsible for:
+## Task 2 — Sequence Diagrams
 
-- Sequence Diagram 1
-- Sequence Diagram 2
+### Sequence Diagram 1: Create a Playlist and Add a Song
+
+```mermaid
+sequenceDiagram
+    participant Listener
+    create participant Playlist
+    Listener->>Playlist: createPlaylist(name, description, isPublic)
+    Listener->>Playlist: addSong(song)
+    Playlist-->>Listener: song added
+```
+
+### Sequence Diagram 2: Play a Song
+
+```mermaid
+sequenceDiagram
+    participant Listener
+    participant Song
+    Listener->>Song: play()
+    create participant ListeningHistory
+    Listener->>ListeningHistory: playSong(song)
+    Listener->>ListeningHistory: recordPlayback()
+    ListeningHistory-->>Listener: playback recorded
+```
 
 ### Khalid
 
