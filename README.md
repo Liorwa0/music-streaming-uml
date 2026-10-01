@@ -263,36 +263,79 @@ classDiagram
 | User → ListeningHistory | 1:N |
 | Song → ListeningHistory | 1:N |
 ---
-
 ## Task 2 — Sequence Diagrams
 
-### Abdulrahman
-
-## Task 2 — Sequence Diagrams
-
-### Sequence Diagram 1: Create a Playlist and Add a Song
+### Sequence Diagram 1: Play a Song
 
 ```mermaid
 sequenceDiagram
-    participant Listener
-    create participant Playlist
-    Listener->>Playlist: createPlaylist(name, description, isPublic)
-    Listener->>Playlist: addSong(song)
-    Playlist-->>Listener: song added
-```
-
-### Sequence Diagram 2: Play a Song
-
-```mermaid
-sequenceDiagram
-    participant Listener
+    autonumber
+    actor Listener
     participant Song
     Listener->>Song: play()
+    Song-->>Listener: playing
     create participant ListeningHistory
-    Listener->>ListeningHistory: playSong(song)
+    Listener-->>ListeningHistory: «create»
     Listener->>ListeningHistory: recordPlayback()
     ListeningHistory-->>Listener: playback recorded
+    loop while the song is playing
+        Listener->>ListeningHistory: updateProgress(seconds)
+        ListeningHistory-->>Listener: progress updated
+    end
 ```
+
+**Explanation:**
+1. The `Listener` asks the `Song` to play with `play()`, and the `Song` confirms.
+2. Only now is a `ListeningHistory` created (dashed arrow). It does not exist before the song is played, because it records this specific play event.
+3. The `Listener` asks the new `ListeningHistory` to record the play with `recordPlayback()`. `ListeningHistory` is only responsible for recording the event, not for playing the song.
+4. The `ListeningHistory` confirms with `playback recorded`.
+5. While the song is playing, the progress is updated with `updateProgress(seconds)`.
+
+*By Abdulrahman*
+
+### Sequence Diagram 2: Create a Playlist and Add a Song
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Listener
+    create participant Playlist
+    Listener-->>Playlist: createPlaylist(name, description, isPublic)
+    Listener->>+Playlist: addSong(song)
+    create participant PlaylistSong
+    Playlist-->>PlaylistSong: «create»
+    Playlist-->>-Listener: PlaylistSong
+```
+
+**Explanation:**
+1. The `Listener` requests a new playlist with `createPlaylist(name, description, isPublic)`. A new `Playlist` object is created with its own lifeline (dashed arrow).
+2. The `Listener` asks the `Playlist` to add a song with `addSong(song)`. The `Playlist` manages its own songs and their order.
+3. The `Playlist` creates a `PlaylistSong`. It is a real class in the Class Diagram, and it represents the link between the `Playlist` and the `Song`, with its `position` and `addedAt`.
+4. The `Playlist` returns the new `PlaylistSong` to the `Listener`.
+
+*By Abdulrahman*
+
+### Sequence Diagram 3: Create an Album and Publish a Song
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Artist
+    create participant Album
+    Artist-->>Album: createAlbum(title, description, coverImage, releaseDate)
+    create participant Song
+    Artist-->>Song: publishSong(title, description, durationSeconds, audioUrl, coverImage, releaseDate)
+    Artist->>Album: addSong(song)
+    Album-->>Artist: song added
+```
+
+**Explanation:**
+1. The `Artist` creates a new `Album` with `createAlbum(...)`.
+2. The `Artist` publishes a new `Song` with `publishSong(...)`. The song exists on its own before it joins an album.
+3. The `Artist` asks the `Album` to include the song with `addSong(song)`. The `Album` manages its own songs.
+4. The `Album` confirms with `song added`.
+
+*By Abdulrahman*
 
 ### Khalid
 
