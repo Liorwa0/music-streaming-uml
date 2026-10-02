@@ -379,10 +379,6 @@ sequenceDiagram
 
 ## Task 3 — Design Justification
 
-### Khalid
-
-## Task 3 — Design Justification
-
 ### 1. Main Design Decisions
 - **`User` superclass with `Listener` and `Artist` subclasses:** both share the same account data (username, email, password) and actions (login, logout, update profile), so inheritance avoids duplication.
 - **`PlaylistSong` association class:** the link between a playlist and a song has its own data (`position`, `addedAt`), so it cannot be a simple many-to-many line.
@@ -435,6 +431,6 @@ Each class manages its own data. For example, the `User` never edits a `Playlist
 - [x] Task 0 — Arwa
 - [x] Task 1 — EER Diagram — Arwa
 - [x] Task 1 — UML Class Diagram — Arwa
-- [ ] Task 2 — Sequence Diagrams — Abdulrahman / Khalid
+- [x] Task 2 — Sequence Diagrams — Abdulrahman / Khalid
 - [x] Task 3 — Design Justification — Khalid
 - [x] Final Presentation — Khalid
