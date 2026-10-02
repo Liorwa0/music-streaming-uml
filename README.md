@@ -362,7 +362,7 @@ sequenceDiagram
         Playlist-->>User: no change
     end
     deactivate Playlist
-    
+
 ```
 
 **Explanation:**
@@ -381,21 +381,53 @@ sequenceDiagram
 
 ### Khalid
 
-Responsible for:
+## Task 3 — Design Justification
 
-- Design Justification
+### 1. Main Design Decisions
+- **`User` superclass with `Listener` and `Artist` subclasses:** both share the same account data (username, email, password) and actions (login, logout, update profile), so inheritance avoids duplication.
+- **`PlaylistSong` association class:** the link between a playlist and a song has its own data (`position`, `addedAt`), so it cannot be a simple many-to-many line.
+- **Composition between `Playlist` and `PlaylistSong`:** an entry has no meaning outside its playlist. Deleting a playlist deletes its entries, but never the songs.
+- **Following the scenario literally:** no playback is modeled ("Avoid modeling streaming or playback behavior"), and every song belongs to an album ("A song belongs to an album").
 
----
+### 2. Responsibilities
+| Class | Responsibility |
+|---|---|
+| `User` | Account data and actions; creates and owns playlists |
+| `Listener` / `Artist` | Add their own data; `Artist` creates albums and publishes songs |
+| `Playlist` | Manages its own songs and their order (`addSong`, `removeSong`, `reorderSongs`) |
+| `PlaylistSong` | Knows one song's place in one playlist (`changePosition`) |
+| `Album` | Manages its own songs |
+| `Song` | Knows its own data |
 
-## Final Presentation
+Each class manages its own data. For example, the `User` never edits a `PlaylistSong` directly; it asks the `Playlist`, which is responsible for its content.
 
-### Khalid
+### 3. Relationships and Multiplicities
+| Relationship | Multiplicity | Reason |
+|---|---|---|
+| `User` → `Playlist` | 1 → 0..* | A playlist has one owner; a new user has none |
+| `Playlist` ◆ `PlaylistSong` | 1 → 0..* | An empty playlist is valid |
+| `PlaylistSong` → `Song` | 0..* → 1 | One song can be in many playlists |
+| `Artist` → `Album` | 1 → 0..* | Every album has exactly one artist |
+| `Album` → `Song` | 1 → 0..* | Every song belongs to one album |
+| `Artist` → `Song` | 1 → 0..* | Every song has exactly one artist |
 
-Responsible for:
+### 4. Alternatives Considered
+| Alternative | Why we rejected it |
+|---|---|
+| `Listener` and `Artist` as separate classes | Duplicates account data and login |
+| Direct many-to-many `Playlist` ↔ `Song` | Nowhere to store `position` and `addedAt` |
+| `Album` 0..1 (songs without an album) | Breaks "A song belongs to an album" |
+| `ListeningHistory` and `play()` | The scenario says to avoid playback behavior |
+| `createPlaylist()` only in `Listener` | Artists are users too; the EER links playlists to `User` |
 
-- Final Presentation
+### 5. Trade-offs
+- **Inheritance:** one more class, but no duplicated fields or methods.
+- **`PlaylistSong`:** an extra class, but the order of songs is stored correctly.
+- **Song must have an album:** matches the scenario, but a single needs an album with one track.
+- **Small model:** easy to understand and extend (for example, following an artist only needs a new association), but features outside the scenario are not covered.
 
----
+*By Khaled*
+
 
 ## Requirements Compliance
 
@@ -404,5 +436,5 @@ Responsible for:
 - [x] Task 1 — EER Diagram — Arwa
 - [x] Task 1 — UML Class Diagram — Arwa
 - [ ] Task 2 — Sequence Diagrams — Abdulrahman / Khalid
-- [ ] Task 3 — Design Justification — Khalid
-- [ ] Final Presentation — Khalid
+- [x] Task 3 — Design Justification — Khalid
+- [x] Final Presentation — Khalid
