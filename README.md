@@ -337,11 +337,43 @@ sequenceDiagram
 
 *By Abdulrahman*
 
-### Khalid
+### Sequence Diagram 3: Remove a Song from a Playlist
 
-Responsible for:
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as User (Listener / Artist)
+    participant Playlist
+    participant PlaylistSong
 
-- Sequence Diagram 3
+    User->>Playlist: removeSong(song)
+    activate Playlist
+    Note over Playlist,PlaylistSong: Playlist finds the PlaylistSong entry for this song
+
+    alt song is in the playlist
+        Note over Playlist,PlaylistSong: Entry removed (composition). The Song itself is not deleted
+        Playlist->>Playlist: reorderSongs()
+        loop for each PlaylistSong after the removed position
+            Playlist->>PlaylistSong: changePosition(newPosition)
+            PlaylistSong-->>Playlist: position updated
+        end
+        Playlist-->>User: song removed
+    else song is not in the playlist
+        Playlist-->>User: no change
+    end
+    deactivate Playlist
+    
+```
+
+**Explanation:**
+1. The `Listener` asks the `Playlist` to remove a song with `removeSong(song)`. The `Playlist` manages its own songs, so it is responsible for removing them.
+2. The `Playlist` finds the `PlaylistSong` entry that links this song to the playlist.
+3. If the song is in the playlist, the `PlaylistSong` entry is removed. Because of the composition, a `PlaylistSong` cannot exist without its `Playlist`. The `Song` itself is not deleted, because it can still belong to its album and to other playlists.
+4. The `Playlist` reorganizes its order with `reorderSongs()`.
+5. For each song that was after the removed one, the `Playlist` updates its position with `changePosition(newPosition)`, so there are no gaps in the order.
+6. The `Playlist` confirms with `song removed`. If the song was not in the playlist, it replies with `no change`.
+
+*By Khalid*
 
 ---
 
