@@ -6,13 +6,13 @@
 |---|---|
 | Arwa | Task 0: Problem Analysis + Task 1: Class Diagram |
 | Abdulrahman | Task 2: Sequence Diagrams 1 and 2 |
-| Khalid | Task 2: Sequence Diagram 3 + Task 3: Design Justification + Final Presentation |
+| Khalid | Task 2: Sequence Diagram 4 + Task 3: Design Justification + Final Presentation |
 
 ---
 
 ## 1. Project Overview
 
-A UML design of a basic music streaming platform. Listeners play songs, build playlists, save favorites and have their listening recorded. Artists publish songs and create albums. The design is modeled with an EER diagram (supplementary), a UML class diagram, and three sequence diagrams, all consistent with one domain model.
+A UML design of a basic music streaming platform. Listeners play songs, build playlists, save favorites and have their listening recorded. Artists publish songs and create albums. The design is modeled with an EER diagram (supplementary), a UML class diagram, and four sequence diagrams, all consistent with one domain model.
 
 **Out of scope:** payments, subscriptions, social features, recommendations, podcasts, messaging.
 
@@ -335,7 +335,7 @@ sequenceDiagram
 3. The `Artist` asks the `Album` to include the song with `addSong(song)`. The `Album` manages its own songs.
 4. The `Album` confirms with `song added`.
 
-*By Abdulrahman*
+*By Khalid*
 
 ### Sequence Diagram 4: Remove a Song from a Playlist
 
@@ -383,12 +383,12 @@ sequenceDiagram
 - **`User` superclass with `Listener` and `Artist` subclasses:** both share the same account data (username, email, password) and actions (login, logout, update profile), so inheritance avoids duplication.
 - **`PlaylistSong` association class:** the link between a playlist and a song has its own data (`position`, `addedAt`), so it cannot be a simple many-to-many line.
 - **Composition between `Playlist` and `PlaylistSong`:** an entry has no meaning outside its playlist. Deleting a playlist deletes its entries, but never the songs.
-- **Following the scenario literally:** no playback is modeled ("Avoid modeling streaming or playback behavior"), and every song belongs to an album ("A song belongs to an album").
+- **Following the scenario literally:** the model focuses on the required UML design and does not add features outside the project scope.
 
 ### 2. Responsibilities
 | Class | Responsibility |
 |---|---|
-| `User` | Account data and actions; creates and owns playlists |
+| `User` | Account data and actions |
 | `Listener` / `Artist` | Add their own data; `Artist` creates albums and publishes songs |
 | `Playlist` | Manages its own songs and their order (`addSong`, `removeSong`, `reorderSongs`) |
 | `PlaylistSong` | Knows one song's place in one playlist (`changePosition`) |
@@ -404,7 +404,7 @@ Each class manages its own data. For example, the `User` never edits a `Playlist
 | `Playlist` ◆ `PlaylistSong` | 1 → 0..* | An empty playlist is valid |
 | `PlaylistSong` → `Song` | 0..* → 1 | One song can be in many playlists |
 | `Artist` → `Album` | 1 → 0..* | Every album has exactly one artist |
-| `Album` → `Song` | 1 → 0..* | Every song belongs to one album |
+| `Album` → `Song` | 0..1 → 0..* | An album can be empty, and a song may be released without an album |
 | `Artist` → `Song` | 1 → 0..* | Every song has exactly one artist |
 
 ### 4. Alternatives Considered
@@ -412,14 +412,14 @@ Each class manages its own data. For example, the `User` never edits a `Playlist
 |---|---|
 | `Listener` and `Artist` as separate classes | Duplicates account data and login |
 | Direct many-to-many `Playlist` ↔ `Song` | Nowhere to store `position` and `addedAt` |
-| `Album` 0..1 (songs without an album) | Breaks "A song belongs to an album" |
-| `ListeningHistory` and `play()` | The scenario says to avoid playback behavior |
-| `createPlaylist()` only in `Listener` | Artists are users too; the EER links playlists to `User` |
+| `Album` 0..1 (songs without an album) | The class diagram and EER alignment allow a song to be released as a single |
+| `ListeningHistory` and `play()` | They are included in the model because the project overview and use cases include playback and listening history |
+| `createPlaylist()` only in `Listener` | The class diagram treats playlist creation as a Listener action |
 
 ### 5. Trade-offs
 - **Inheritance:** one more class, but no duplicated fields or methods.
 - **`PlaylistSong`:** an extra class, but the order of songs is stored correctly.
-- **Song must have an album:** matches the scenario, but a single needs an album with one track.
+- **Album is optional for a song:** allows a song to be released as a single, as shown in the class diagram and EER alignment.
 - **Small model:** easy to understand and extend (for example, following an artist only needs a new association), but features outside the scenario are not covered.
 
 *By Khaled*
