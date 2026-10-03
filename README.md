@@ -6,7 +6,7 @@
 |---|---|
 | Arwa | Task 0: Problem Analysis + Task 1: Class Diagram |
 | Abdulrahman | Task 2: Sequence Diagrams 1 and 2 |
-| Khalid | Task 2: Sequence Diagram 4 + Task 3: Design Justification + Final Presentation |
+| Khalid | Task 2: Sequence Diagram 3 + Task 3: Design Justification + Final Presentation |
 
 ---
 
@@ -342,11 +342,11 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     autonumber
-    actor User as User (Listener / Artist)
+    actor Listener
     participant Playlist
     participant PlaylistSong
 
-    User->>Playlist: removeSong(song)
+    Listener->>Playlist: removeSong(song)
     activate Playlist
     Note over Playlist,PlaylistSong: Playlist finds the PlaylistSong entry for this song
 
@@ -357,9 +357,9 @@ sequenceDiagram
             Playlist->>PlaylistSong: changePosition(newPosition)
             PlaylistSong-->>Playlist: position updated
         end
-        Playlist-->>User: song removed
+        Playlist-->>Listener: song removed
     else song is not in the playlist
-        Playlist-->>User: no change
+        Playlist-->>Listener: no change
     end
     deactivate Playlist
 
@@ -400,7 +400,7 @@ Each class manages its own data. For example, the `User` never edits a `Playlist
 ### 3. Relationships and Multiplicities
 | Relationship | Multiplicity | Reason |
 |---|---|---|
-| `User` → `Playlist` | 1 → 0..* | A playlist has one owner; a new user has none |
+| `Listener` → `Playlist` | 1 → 0..* | A playlist has one owner; a new listener has none |
 | `Playlist` ◆ `PlaylistSong` | 1 → 0..* | An empty playlist is valid |
 | `PlaylistSong` → `Song` | 0..* → 1 | One song can be in many playlists |
 | `Artist` → `Album` | 1 → 0..* | Every album has exactly one artist |
