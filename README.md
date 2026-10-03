@@ -337,7 +337,7 @@ sequenceDiagram
 
 *By Abdulrahman*
 
-### Sequence Diagram 3: Remove a Song from a Playlist
+### Sequence Diagram 4: Remove a Song from a Playlist
 
 ```mermaid
 sequenceDiagram
