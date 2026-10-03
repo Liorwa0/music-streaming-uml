@@ -223,7 +223,7 @@ classDiagram
 - **Note:** `album_id` may be NULL when the song is released as a single.
 
 #### Playlist
-- **Represents:** A list of songs created by a user.
+- **Represents:** A list of songs created by a listener.
 - **PK:** `playlist_id`
 - **FK:** `user_id` → User
 - **Attributes:** `name`, `description`, `cover_image`, `is_public`, `created_at`, `updated_at`
@@ -257,7 +257,7 @@ classDiagram
 | Artist → Album | 1:N |
 | Artist → Song | 1:N |
 | Album → Song | 1:N |
-| User → Playlist | 1:N |
+| Listener → Playlist | 1:N |
 | Playlist ↔ Song | M:N through PlaylistSong |
 | User ↔ Song | M:N through Favorite |
 | User → ListeningHistory | 1:N |
@@ -308,7 +308,7 @@ sequenceDiagram
 ```
 
 **Explanation:**
-1. The `Listener` requests a new playlist with `createPlaylist(name, description, isPublic)`. A new `Playlist` object is created with its own lifeline (dashed arrow).
+1. The `Listener` requests a new playlist with `createPlaylist(name, description, isPublic)`. A new `Playlist` object is created with its own lifeline.
 2. The `Listener` asks the `Playlist` to add a song with `addSong(song)`. The `Playlist` manages its own songs and their order.
 3. The `Playlist` creates a `PlaylistSong`. It is a real class in the Class Diagram, and it represents the link between the `Playlist` and the `Song`, with its `position` and `addedAt`.
 4. The `Playlist` returns the new `PlaylistSong` to the `Listener`.
@@ -366,7 +366,7 @@ sequenceDiagram
 ```
 
 **Explanation:**
-1. The `Listener` asks the `Playlist` to remove a song with `removeSong(song)`. The `Playlist` manages its own songs, so it is responsible for removing them.
+1. The `Listener` asks the `Playlist` to remove a song with `removeSong(song)`. The `Playlist` manages its own songs, so it is responsible for removing the playlist entry.
 2. The `Playlist` finds the `PlaylistSong` entry that links this song to the playlist.
 3. If the song is in the playlist, the `PlaylistSong` entry is removed. Because of the composition, a `PlaylistSong` cannot exist without its `Playlist`. The `Song` itself is not deleted, because it can still belong to its album and to other playlists.
 4. The `Playlist` reorganizes its order with `reorderSongs()`.
@@ -395,7 +395,6 @@ sequenceDiagram
 | `Album` | Manages its own songs |
 | `Song` | Knows its own data |
 
-Each class manages its own data. For example, the `User` never edits a `PlaylistSong` directly; it asks the `Playlist`, which is responsible for its content.
 
 ### 3. Relationships and Multiplicities
 | Relationship | Multiplicity | Reason |
@@ -412,9 +411,9 @@ Each class manages its own data. For example, the `User` never edits a `Playlist
 |---|---|
 | `Listener` and `Artist` as separate classes | Duplicates account data and login |
 | Direct many-to-many `Playlist` ↔ `Song` | Nowhere to store `position` and `addedAt` |
-| `Album` 0..1 (songs without an album) | The class diagram and EER alignment allow a song to be released as a single |
-| `ListeningHistory` and `play()` | They are included in the model because the project overview and use cases include playback and listening history |
-| `createPlaylist()` only in `Listener` | The class diagram treats playlist creation as a Listener action |
+| Song without an album | A song may be released as a single, which matches the class diagram and EER alignment |
+| Playback and listening history | They are included because the project overview and use cases include playback and listening history |
+| Playlist creation through `Listener` | The class diagram treats playlist creation as a Listener action |
 
 ### 5. Trade-offs
 - **Inheritance:** one more class, but no duplicated fields or methods.
@@ -422,7 +421,7 @@ Each class manages its own data. For example, the `User` never edits a `Playlist
 - **Album is optional for a song:** allows a song to be released as a single, as shown in the class diagram and EER alignment.
 - **Small model:** easy to understand and extend (for example, following an artist only needs a new association), but features outside the scenario are not covered.
 
-*By Khaled*
+*By Khalid*
 
 
 ## Requirements Compliance
