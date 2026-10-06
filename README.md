@@ -2,11 +2,13 @@
 
 **Holberton School — PLD Activity / UML Design Lab**
 
+## Member Responsibilities
+
 | Member | Responsibilities |
-|---|---|
-| Arwa | Task 0: Problem Analysis + Task 1: Class Diagram |
-| Abdulrahman | Task 2: Sequence Diagrams 1 and 2 |
-| Khalid | Task 2: Sequence Diagram 3 + Task 3: Design Justification + Final Presentation |
+| :--- | :--- |
+| **Arwa** | Task 0: Problem Analysis + Task 1: Class Diagram & EER Diagram |
+| **Abdulrahman** | Task 2: Sequence Diagrams 1 and 2 |
+| **Khalid** | Task 2: Sequence Diagrams 3 and 4 + Task 3: Design Justification + Final Presentation |
 
 ---
 
@@ -178,13 +180,14 @@ classDiagram
 - **Favorite:** one listener's saved song, with the date saved.
 - **ListeningHistory:** one play event: when, how far, whether completed.
 
-### Multiplicity justification
-- **Artist 1 → 0..* Album / Song:** every album and song has exactly one artist; a new artist may have none yet.
-- **Album 0..1 → 0..* Song:** an album can be empty at creation; a song may be a single with no album. Aggregation (hollow diamond) because songs outlive album membership.
-- **Listener 1 → 0..* Playlist:** a playlist belongs to exactly one listener; a listener may have none.
-- **Playlist 1 → 0..* PlaylistSong (composition):** a PlaylistSong cannot exist without its playlist. **PlaylistSong 0..* → 1 Song:** one song can appear in many playlists (many-to-many through the association class); each entry refers to exactly one song.
-- **Listener 1 → 0..* Favorite, Favorite 0..* → 1 Song:** many-to-many between Listener and Song; each Favorite has exactly one listener and one song.
-- **Listener 1 → 0..* ListeningHistory, ListeningHistory 0..* → 1 Song:** each play belongs to one listener and one song; a new listener has no history.
+### Multiplicity Justification
+* **Artist `1` → `0..*` Album / Song:** Every album and song has exactly one artist; a new artist may have none yet.
+* **Album `0..1` → `0..*` Song:** An album can be empty at creation; a song may be a single with no album. Aggregation (hollow diamond) is used because songs outlive album membership.
+* **Listener `1` → `0..*` Playlist:** A playlist belongs to exactly one listener; a listener may have none.
+* **Playlist `1` ◆→ `0..*` PlaylistSong (Composition):** A `PlaylistSong` cannot exist without its playlist.
+* **PlaylistSong `0..*` → `1` Song:** One song can appear in many playlists; each entry refers to exactly one song.
+* **Listener `1` → `0..*` Favorite**, **Favorite `0..*` → `1` Song:** Association class between Listener and Song; each entry links one listener and one song.
+* **Listener `1` → `0..*` ListeningHistory**, **ListeningHistory `0..*` → `1` Song:** Each play belongs to one listener and one song; a new listener has no history.
 
 ### Relation to the EER diagram
 ![EER Diagram](./eer-diagram.jpg) shows the database view of the same domain: tables, PKs, FKs. It is supplementary; the class diagram is the UML deliverable. Alignment notes:
