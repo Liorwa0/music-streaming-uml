@@ -262,8 +262,8 @@ classDiagram
 | Album → Song | 1:N |
 | Listener → Playlist | 1:N |
 | Playlist ↔ Song | M:N through PlaylistSong |
-| User ↔ Song | M:N through Favorite |
-| User → ListeningHistory | 1:N |
+| Listener ↔ Song | M:N through Favorite |
+| Listener → ListeningHistory | 1:N |
 | Song → ListeningHistory | 1:N |
 ---
 ## Task 2 — Sequence Diagrams
